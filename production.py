@@ -31,7 +31,7 @@ COM_LOG_MSG__FUSE_BITS_BURNED = "Programming bank"
 COM_CMD_CHECK_FLASH = "sf probe "
 COM_CMD_RESET_DEVICE = "reset "
 
-COM_CMD_WRITE_FIRMWARE_TO_FLASH = "sf update 0x82000000 0x0 0x800000 "
+COM_CMD_WRITE_FIRMWARE_TO_FLASH = "sf update 0x82000000 0x0 0x1000000 "
 COM_CMD_BURN_FUSE_BITS_1 = "fuse prog -y 0 5 0x0a000030 "
 COM_CMD_BURN_FUSE_BITS_2 = "fuse prog -y 0 6 0x00000010 "
 # COM_CMD_WRITE_FIRMWARE_TO_FLASH = "sf update 0x82000000 0x1000 0x8000 "
@@ -213,7 +213,7 @@ if __name__ == '__main__':
 
     # 6. Load kernel image
     telnet_socket_write_queue.put((TELNET_CMD_LOAD_KERNEL_IMAGE + "\r\n").encode())
-    check_state(device_state, STATE_IMAGE_LOADED, 600)
+    check_state(device_state, STATE_IMAGE_LOADED, 1000)
 
     # 7. Start U-boot execution
     telnet_socket_write_queue.put((TELNET_CMD_START_U_BOOT + "\r\n").encode())
@@ -225,7 +225,7 @@ if __name__ == '__main__':
 
     # 9. Flash firmware to IC
     com_port_write_queue.put(COM_CMD_WRITE_FIRMWARE_TO_FLASH + "\r")
-    check_state(device_state_com, STATE_FIRMWARE_FLASHED_TO_IC, 300)
+    check_state(device_state_com, STATE_FIRMWARE_FLASHED_TO_IC, 700)
 
     # 10. Burn fuse bit (ECSPI3 programming 0x450 = 0x0a000030)
     com_port_write_queue.put(COM_CMD_BURN_FUSE_BITS_1 + "\r")
@@ -237,9 +237,3 @@ if __name__ == '__main__':
 
     # 12. Reset device
     com_port_write_queue.put(COM_CMD_RESET_DEVICE + "\r")
-
-    cnt = 0
-    while True:
-        cnt = cnt + 1
-        print("hello ", cnt)
-        sleep(1)
